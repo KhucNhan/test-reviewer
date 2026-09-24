@@ -5,7 +5,7 @@ const API_URL = process.env.API_URL ?? 'http://localhost:3001';
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, init);
   if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
+    throw new Error(`HTTP ${res.status} for ${path}`);
   }
   const json = await res.json();
   return (json?.data ?? json) as T;
@@ -20,7 +20,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export async function getPageBySegments(segments: string[]): Promise<Page | null> {
   if (segments.length !== 1 && segments.length !== 2) return null;
 
-  const apiPath = `/api/v1/public/pages/${segments.join('/')}`;
+  const apiPath = `/api/v1/public/pages/${segments.map(encodeURIComponent).join('/')}`;
   const cacheTag = `page:${segments.join('/')}`;
 
   try {
